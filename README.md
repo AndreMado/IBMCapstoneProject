@@ -36,3 +36,65 @@ SoftCart uses Hadoop cluster as its big data platform where all the data is coll
 Spark is used to analyse the data on the Hadoop cluster.
 
 To move data between OLTP, NoSQL and the data warehouse, ETL pipelines are used and these run on Apache Airflow.
+
+# Steps to run the project
+
+## Installing Kubernetes with Minikube on Ubuntu(If you're other OS you can find how to install kubernetes on Google)
+To run Kubernetes locally for development and testing, we will use **Minikube**, which allows us to deploy a lightweight single-node cluster.
+
+### **1. Install Required Dependencies**
+Before installing Minikube, update your package list and install necessary tools:
+
+```bash
+sudo apt update
+sudo apt install -y curl wget apt-transport-https
+```
+
+### **2. Install kubectl**
+`kubectl` is the command-line tool used to interact with Kubernetes clusters.
+
+```bash
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+chmod +x kubectl
+sudo mv kubectl /usr/local/bin/
+```
+
+Verify the installation:
+```bash
+kubectl version --client
+```
+
+### **3. Install Minikube**
+Download and install Minikube:
+
+```bash
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+```
+
+Verify the installation:
+```bash
+minikube version
+```
+
+### **4. Start Kubernetes with Minikube**
+To start Minikube, use the following command:
+
+```bash
+minikube start --driver=docker
+```
+
+This initializes a Kubernetes cluster using **Docker** as the container runtime.
+
+### **5. Verify the Cluster is Running**
+To check if Kubernetes is running, use:
+
+```bash
+kubectl get nodes
+```
+
+If the output shows a node in **Ready** state, the cluster is successfully set up.
+
+---
+
+
