@@ -20,6 +20,9 @@ kubectl apply -f k8s/mysql-secret.yaml
 kubectl apply -f k8s/mysql-pvc.yaml
 kubectl apply -f k8s/mysql-deployment.yaml
 kubectl apply -f k8s/mysql-service.yaml
+kubectl apply -f k8s/phpmyadmin-deployment.yaml
+kubectl apply -f k8s/phpmyadmin-service.yaml
+
 
 # Esperar a que MySQL esté listo
 echo "Waiting for MySQL pod to be ready..."
