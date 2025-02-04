@@ -97,4 +97,33 @@ If the output shows a node in **Ready** state, the cluster is successfully set u
 
 ---
 
+## **Deploying MySQL and phpMyAdmin with Minikube**
 
+### **1. Setup Script**
+A `setup.sh` script is provided to automate the deployment of MySQL and phpMyAdmin.
+
+#### **How to Run the Script**
+```bash
+chmod +x setup.sh
+./setup.sh
+```
+This will:
+- Start Minikube if it's not already running.
+- Deploy MySQL and phpMyAdmin.
+- Wait for MySQL to be ready before proceeding.
+
+### **2. Access phpMyAdmin**
+Once the script completes, you can access phpMyAdmin using Minikube’s IP:
+
+```bash
+minikube ip
+```
+Copy the IP address and open the following URL in your browser:
+
+```
+http://<MINIKUBE_IP>:30001
+```
+
+### **3. Login Credentials**
+- **Username:** `root`
+- **Password:** (stored in Kubernetes Secret, default: `rootpassword`)
