@@ -2,11 +2,25 @@
 
 set -e  # Terminar si hay un error
 echo "Validating all the required data in the system"
+# Ensure the data directory exists
+mkdir -p data
 cd data
-if ! ls | grep -q "oltpdata.csv"; then
-	echo "Downloading data"
-	wget https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0321EN-SkillsNetwork/oltp/oltpdata.csv
+
+# Download the files only if they don't exist
+if [ ! -f "oltpdata.csv" ]; then
+    echo "Downloading oltpdata.csv..."
+    wget -q --show-progress https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0321EN-SkillsNetwork/oltp/oltpdata.csv
+else
+    echo "oltpdata.csv already exists, skipping download."
 fi
+
+if [ ! -f "catalog.json" ]; then
+    echo "Downloading catalog.json..."
+    wget -q --show-progress https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0321EN-SkillsNetwork/nosql/catalog.json
+else
+    echo "catalog.json already exists, skipping download."
+fi
+
 cd ..
 # Verificar si Minikube está corriendo
 echo "Welcome to my Capstone project :) by Andres Maldonado"
@@ -24,6 +38,11 @@ kubectl apply -f k8s/mysql-deployment.yaml
 kubectl apply -f k8s/mysql-service.yaml
 kubectl apply -f k8s/phpmyadmin-deployment.yaml
 kubectl apply -f k8s/phpmyadmin-service.yaml
+kubectl apply -f k8s/mongodb-secret.yaml
+kubectl apply -f k8s/mongodb-pvc.yaml
+kubectl apply -f k8s/mongodb-deployment.yaml
+kubectl apply -f k8s/mongodb-service.yaml
+
 
 
 # Esperar a que MySQL esté listo
@@ -41,3 +60,12 @@ echo "Database and data import completed successfully!"
 
 chmod +x datadump.sh
 ./datadump.sh
+
+echo "Initializating the import of the data into MongoDB"
+python3 python/fixing_catalog.py
+kubectl exec -it $(kubectl get pod -l app=mongodb -o jsonpath="{.items[0].metadata.name}") -- mongosh -u mongoadmin -p securepass --authenticationDatabase admin --eval '
+use catalog
+db.createCollection("electronics") '
+kubectl cp data/catalog_fixed.json $(kubectl get pod -l app=mongodb -o jsonpath="{.items[0].metadata.name}"):/tmp/catalog_fixed.json
+kubectl exec -it $(kubectl get pod -l app=mongodb -o jsonpath="{.items[0].metadata.name}") -- mongoimport --db catalog --collection electronics --file /tmp/catalog_fixed.json --jsonArray -u mongoadmin -p securepass --authenticationDatabase admin
+echo "MongoDB deployment completed successfully!"
