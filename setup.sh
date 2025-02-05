@@ -38,3 +38,6 @@ kubectl exec -it $(kubectl get pod -l app=mysql -o jsonpath="{.items[0].metadata
     mysql -u root -p$(kubectl get secret mysql-secret -o jsonpath="{.data.MYSQL_ROOT_PASSWORD}" | base64 --decode) < sql/OLTPdb.sql
 
 echo "Database and data import completed successfully!"
+
+chmod +x datadump.sh
+./datadump.sh
