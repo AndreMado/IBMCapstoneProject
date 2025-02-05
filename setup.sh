@@ -69,3 +69,10 @@ db.createCollection("electronics") '
 kubectl cp data/catalog_fixed.json $(kubectl get pod -l app=mongodb -o jsonpath="{.items[0].metadata.name}"):/tmp/catalog_fixed.json
 kubectl exec -it $(kubectl get pod -l app=mongodb -o jsonpath="{.items[0].metadata.name}") -- mongoimport --db catalog --collection electronics --file /tmp/catalog_fixed.json --jsonArray -u mongoadmin -p securepass --authenticationDatabase admin
 echo "MongoDB deployment completed successfully!"
+
+echo "Exporting MongoDB into .csv file"
+kubectl exec -it $(kubectl get pod -l app=mongodb -o jsonpath="{.items[0].metadata.name}") -- mongoexport --db catalog --collection electronics --type=csv --fields _id,type,model --out /tmp/electronics.csv -u mongoadmin -p securepass --authenticationDatabase admin
+kubectl exec -it $(kubectl get pod -l app=mongodb -o jsonpath="{.items[0].metadata.name}") -- ls /tmp
+kubectl cp $(kubectl get pod -l app=mongodb -o jsonpath="{.items[0].metadata.name}"):/tmp/electronics.csv outputdata/electronics.csv
+
+
