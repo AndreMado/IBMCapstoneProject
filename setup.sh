@@ -24,6 +24,11 @@ kubectl apply -f k8s/mysql-deployment.yaml
 kubectl apply -f k8s/mysql-service.yaml
 kubectl apply -f k8s/phpmyadmin-deployment.yaml
 kubectl apply -f k8s/phpmyadmin-service.yaml
+kubectl apply -f k8s/mongodb-secret.yaml
+kubectl apply -f k8s/mongodb-pvc.yaml
+kubectl apply -f k8s/mongodb-deployment.yaml
+kubectl apply -f k8s/mongodb-service.yaml
+
 
 
 # Esperar a que MySQL esté listo

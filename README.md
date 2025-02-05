@@ -111,6 +111,7 @@ This will:
 - Start Minikube if it's not already running.
 - Deploy MySQL and phpMyAdmin.
 - Wait for MySQL to be ready before proceeding.
+- Deploy MongoDB
 
 ### **2. Access phpMyAdmin**
 Once the script completes, you can access phpMyAdmin using Minikube’s IP:
@@ -127,3 +128,37 @@ http://<MINIKUBE_IP>:30001
 ### **3. Login Credentials**
 - **Username:** `root`
 - **Password:** (stored in Kubernetes Secret, default: `rootpassword`)
+
+## MongoDB
+MongoDB should be deployed ny executing the script "setup.sh", otherwise, to deploy MongoDB in Kubernetes, run:
+
+```bash
+kubectl apply -f k8s/mongodb-secret.yaml
+kubectl apply -f k8s/mongodb-pvc.yaml
+kubectl apply -f k8s/mongodb-deployment.yaml
+kubectl apply -f k8s/mongodb-service.yaml
+```
+
+### **2. Verify MongoDB Deployment**
+Check if MongoDB is running with:
+```bash
+kubectl get pods
+kubectl get svc
+```
+
+### **3. Access MongoDB inside the Kubernetes Cluster**
+To connect to MongoDB, execute:
+```bash
+kubectl exec -it $(kubectl get pod -l app=mongodb -o jsonpath="{.items[0].metadata.name}") -- mongosh -u mongoadmin -p securepass --authenticationDatabase admin
+```
+
+### **4. List Available Databases**
+Once inside the MongoDB shell, list databases:
+```javascript
+show dbs
+```
+
+### **5. Retrieve MongoDB Credentials from Kubernetes Secret**
+If needed, get the stored password:
+```bash
+kubectl get secret mongodb-secret -o jsonpath="{.data.MONGO_ROOT_PASSWORD}" | base64 --decode
