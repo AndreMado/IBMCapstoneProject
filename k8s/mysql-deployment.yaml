@@ -26,7 +26,26 @@ spec:
           volumeMounts:
             - name: mysql-storage
               mountPath: /var/lib/mysql
+            - name: csv-storage
+              mountPath: /var/lib/mysql-files
       volumes:
         - name: mysql-storage
           persistentVolumeClaim:
             claimName: mysql-pvc
+        - name: csv-storage
+          persistentVolumeClaim:
+            claimName: csv-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: csv-pvc
+  namespace: default
+  labels:
+    app: mysql
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
