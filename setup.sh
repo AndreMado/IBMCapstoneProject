@@ -42,6 +42,15 @@ kubectl apply -f k8s/mongodb-secret.yaml
 kubectl apply -f k8s/mongodb-pvc.yaml
 kubectl apply -f k8s/mongodb-deployment.yaml
 kubectl apply -f k8s/mongodb-service.yaml
+kubectl apply -f k8s/postgres-secret.yaml
+kubectl apply -f k8s/postgres-pvc.yaml
+kubectl apply -f k8s/postgres-deployment.yaml
+kubectl apply -f k8s/postgres-service.yaml
+kubectl apply -f k8s/pgadmin-secret.yaml
+kubectl apply -f k8s/pgadmin-deployment.yaml
+kubectl apply -f k8s/pgadmin-service.yaml
+
+
 
 
 
@@ -63,6 +72,8 @@ chmod +x datadump.sh
 
 echo "Initializating the import of the data into MongoDB"
 python3 python/fixing_catalog.py
+
+kubectl wait --for=condition=ready pod -l app=mongodb --timeout=120s
 kubectl exec -it $(kubectl get pod -l app=mongodb -o jsonpath="{.items[0].metadata.name}") -- mongosh -u mongoadmin -p securepass --authenticationDatabase admin --eval '
 use catalog
 db.createCollection("electronics") '
