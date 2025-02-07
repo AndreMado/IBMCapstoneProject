@@ -162,3 +162,60 @@ show dbs
 If needed, get the stored password:
 ```bash
 kubectl get secret mongodb-secret -o jsonpath="{.data.MONGO_ROOT_PASSWORD}" | base64 --decode
+
+# 📌 Configuración de la Conexión de pgAdmin a PostgreSQL en Minikube
+
+## 📌 1️⃣ Obtener la IP y puerto de PostgreSQL
+Para conectar **pgAdmin** a **PostgreSQL en Minikube**, primero necesitas obtener la IP y el puerto del servicio PostgreSQL.
+
+Ejecuta el siguiente comando:
+```bash
+kubectl get svc postgres-service
+```
+📌 **Toma nota del `CLUSTER-IP` y el puerto (`5432/TCP`).**  
+
+Si PostgreSQL solo está disponible dentro del clúster, asegúrate de que **pgAdmin y PostgreSQL están en el mismo namespace**.
+
+---
+
+## 📌 2️⃣ Acceder a pgAdmin
+1. Abre **pgAdmin** en tu navegador utilizando la URL generada por:
+   ```bash
+   minikube service pgadmin-service --url
+   ```
+2. Inicia sesión con las credenciales definidas en `pgadmin-secret.yaml`:
+   - **Correo:** `pgadmin@example.com`
+   - **Contraseña:** `securepass`
+
+---
+
+## 📌 3️⃣ Crear un nuevo servidor en pgAdmin
+1. En la barra lateral izquierda de **pgAdmin**, haz clic derecho en **"Servers"**.  
+2. Selecciona **"Create" → "Server"**.  
+3. **Pestaña "General"**:
+   - **Name:** PostgreSQL Minikube (o cualquier nombre que prefieras).  
+
+4. **Pestaña "Connection"**:
+   - **Host name/address:** _(Usa la `CLUSTER-IP` obtenida en el paso 1)_.  
+   - **Port:** `5432`  
+   - **Maintenance database:** `staging`  
+   - **Username:** `admin`  
+   - **Password:** `securepass`  
+   - **Click en "Save"**.  
+
+---
+
+## 📌 4️⃣ Verificar la conexión
+📌 Si la conexión es exitosa, verás el servidor en la barra lateral de pgAdmin.  
+📌 Expande **Databases → staging** para ver la estructura de la base de datos.  
+
+Si tienes problemas, revisa:
+```bash
+kubectl get pods -l app=postgres
+kubectl get svc postgres-service
+kubectl logs -l app=postgres
+```
+
+---
+
+🚀 **¡Listo! Ahora PostgreSQL está accesible desde pgAdmin.** 🎯

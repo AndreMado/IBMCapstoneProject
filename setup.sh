@@ -86,4 +86,5 @@ kubectl exec -it $(kubectl get pod -l app=mongodb -o jsonpath="{.items[0].metada
 kubectl exec -it $(kubectl get pod -l app=mongodb -o jsonpath="{.items[0].metadata.name}") -- ls /tmp
 kubectl cp $(kubectl get pod -l app=mongodb -o jsonpath="{.items[0].metadata.name}"):/tmp/electronics.csv outputdata/electronics.csv
 
-
+kubectl wait --for=condition=ready pod -l app=postgres --timeout=120s
+kubectl exec -it $(kubectl get pod -l app=postgres -o jsonpath="{.items[0].metadata.name}") -- psql -U postgres -d postgres -c "\l"
