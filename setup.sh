@@ -27,6 +27,31 @@ if [ ! -f "CREATE-SCRIPT.sql" ]; then
 else
     echo "DimDate already exists, skipping..."
 fi
+if [ ! -f "DimDate.csv" ]; then
+    echo "Dowloading required data for pgadmin"
+    wget -q --show-progress https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0321EN-SkillsNetwork/datawarehousing/data/DimDate.csv
+else
+    echo "DimData already dowloaded.."
+fi
+if [ ! -f "DimCategory.csv" ]; then
+    echo "Dowloading required data for pgadmin"
+    wget -q --show-progress https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0321EN-SkillsNetwork/datawarehousing/DimCategory.csv
+else
+    echo "DimCategory already dowloaded.."
+fi
+if [ ! -f "DimCountry.csv" ]; then
+    echo "Dowloading required data for pgadmin"
+    wget -q --show-progress https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0321EN-SkillsNetwork/datawarehousing/DimCountry.csv
+else
+    echo "DimCountry already dowloaded.."
+fi
+if [ ! -f "FactSales.csv" ]; then
+    echo "Dowloading required data for pgadmin"
+    wget -q --show-progress https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0321EN-SkillsNetwork/datawarehousing/FactSales.csv
+else
+    echo "FactSales already dowloaded.."
+fi
+
 
 cd ..
 # Verificar si Minikube está corriendo
@@ -36,6 +61,13 @@ if ! minikube status | grep -q "Running"; then
     echo "Starting Minikube..."
     minikube start --driver=docker
 fi
+echo "Creating pgpass secret..."
+kubectl delete secret pgpass-secret --ignore-not-found
+kubectl create secret generic pgpass-secret --from-file=pgpass
+
+echo "Creating pgAdmin configuration..."
+kubectl create configmap pgadmin-config --from-file=servers.json --dry-run=client -o yaml | kubectl apply -f -
+
 
 # Aplicar los archivos YAML de MySQL
 echo "Deploying MySQL in Kubernetes..."
@@ -56,6 +88,8 @@ kubectl apply -f k8s/postgres-service.yaml
 kubectl apply -f k8s/pgadmin-secret.yaml
 kubectl apply -f k8s/pgadmin-deployment.yaml
 kubectl apply -f k8s/pgadmin-service.yaml
+kubectl apply -f k8s/pgadmin-pvc.yaml
+
 
 
 
@@ -97,13 +131,22 @@ kubectl cp $(kubectl get pod -l app=mongodb -o jsonpath="{.items[0].metadata.nam
 kubectl wait --for=condition=ready pod -l app=postgres --timeout=120s
 kubectl exec -it $(kubectl get pod -l app=postgres -o jsonpath="{.items[0].metadata.name}") -- psql -U postgres -d postgres -c "\l"
 
-
-echo "postgres-service:5432:staging:admin:securepass" > pgpass
-chmod 600 pgpass
-kubectl delete secret pgpass-secret --ignore-not-found
-kubectl create secret generic pgpass-secret --from-file=pgpass
-kubectl create configmap pgadmin-config --from-file=servers.json --dry-run=client -o yaml | kubectl apply -f -
-kubectl delete pod -l app=pgadmin
-echo "Waiting for pgAdmin to start..."
+###
+#echo "postgres-service:5432:staging:admin:securepass" > pgpass
+#chmod 600 pgpass
+#kubectl delete secret pgpass-secret --ignore-not-found
+#kubectl create secret generic pgpass-secret --from-file=pgpass
+#kubectl create configmap pgadmin-config --from-file=servers.json --dry-run=client -o yaml | kubectl apply -f -
+#kubectl delete pod -l app=pgadmin
+#echo "Waiting for pgAdmin to start..."
+###
 kubectl wait --for=condition=Ready pod -l app=pgadmin --timeout=90s
-kubectl exec -it $(kubectl get pod -l app=postgres -o jsonpath="{.items[0].metadata.name}") -- psql -U postgres -d staging -f /data/CREATE-SCRIPT.sql
+
+
+#DATA TO PG
+kubectl cp data/DimDate.csv $(kubectl get pod -l app=pgadmin -o jsonpath="{.items[0].metadata.name}"):/var/lib/pgadmin/storage/
+kubectl cp data/DimCategory.csv $(kubectl get pod -l app=pgadmin -o jsonpath="{.items[0].metadata.name}"):/var/lib/pgadmin/storage/
+kubectl cp data/DimCountry.csv $(kubectl get pod -l app=pgadmin -o jsonpath="{.items[0].metadata.name}"):/var/lib/pgadmin/storage/
+kubectl cp data/FactSales.csv $(kubectl get pod -l app=pgadmin -o jsonpath="{.items[0].metadata.name}"):/var/lib/pgadmin/storage/
+
+kubectl exec -it $(kubectl get pod -l app=postgres -o jsonpath="{.items[0].metadata.name}") -- psql -U postgres -d staging -f data/CREATE-SCRIPT.sql

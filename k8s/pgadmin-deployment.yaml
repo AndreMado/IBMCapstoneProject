@@ -28,6 +28,12 @@ spec:
                 secretKeyRef:
                   name: pgadmin-secret
                   key: PGADMIN_DEFAULT_PASSWORD
+            - name: PGADMIN_ENABLE_FILE_BROWSER
+              value: "True"
+            - name: PGADMIN_CONFIG_SERVER_MODE
+              value: "False"
+            - name: PGADMIN_DEFAULT_STORAGE_LOCATION
+              value: "/var/lib/pgadmin/storage"
           ports:
             - containerPort: 80
           volumeMounts:
@@ -38,6 +44,9 @@ spec:
               mountPath: /pgpass
               subPath: pgpass
               readOnly: true
+            - name: pgadmin-data
+              mountPath: /var/lib/pgadmin/storage
+
 
       volumes:
         - name: pgadmin-config
@@ -46,3 +55,8 @@ spec:
         - name: pgpass-file
           secret:
             secretName: pgpass-secret
+        - name: pgadmin-data
+          persistentVolumeClaim:
+            claimName: pgadmin-pvc
+
+

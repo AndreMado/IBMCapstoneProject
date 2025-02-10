@@ -34,101 +34,62 @@ SoftCart uses a **hybrid architecture**, with some of its databases on-premises 
 
 # 🚀 Steps to Run the Project
 
-## **1️⃣ Installing Kubernetes with Minikube on Ubuntu**
-To set up Kubernetes for development and testing, we will use **Minikube**, a lightweight single-node cluster.
+## **1️⃣ Deploying Services Using setup.sh (Recommended)**
+The `setup.sh` script automates the deployment of all necessary services in Minikube, including:
+- **MySQL and phpMyAdmin**
+- **MongoDB**
+- **PostgreSQL and pgAdmin**
+- **Downloading required datasets**
+- **Executing initial SQL scripts**
 
-### **1. Install Required Dependencies**
-```bash
-sudo apt update
-sudo apt install -y curl wget apt-transport-https
-```
-
-### **2. Install kubectl**
-```bash
-curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-chmod +x kubectl
-sudo mv kubectl /usr/local/bin/
-kubectl version --client
-```
-
-### **3. Install Minikube**
-```bash
-curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-sudo install minikube-linux-amd64 /usr/local/bin/minikube
-minikube version
-```
-
-### **4. Start Minikube with Docker**
-```bash
-minikube start --driver=docker
-```
-
-### **5. Verify Minikube is Running**
-```bash
-kubectl get nodes
-```
-
----
-
-## **2️⃣ Deploying MySQL and phpMyAdmin in Minikube**
-
-### **1. Running the Setup Script**
-A script `setup.sh` is available to automate deployment.
-
-Run:
+### **Run the script:**
 ```bash
 chmod +x setup.sh
 ./setup.sh
 ```
-This will:
-- Start **Minikube** (if not already running).
-- Deploy **MySQL** and **phpMyAdmin**.
-- Ensure MySQL is **ready** before proceeding.
-- Deploy **MongoDB**.
 
-### **2. Access phpMyAdmin**
-Find Minikube's IP:
+### **What the script does:**
+1. Starts **Minikube** (if not already running).
+2. Deploys **MySQL** and **phpMyAdmin**.
+3. Deploys **MongoDB**.
+4. Deploys **PostgreSQL** and **pgAdmin**.
+5. Waits for all services to be up and running.
+6. Imports necessary datasets and executes SQL scripts automatically.
+
+---
+
+## **2️⃣ Accessing phpMyAdmin**
+After running `setup.sh`, you can access phpMyAdmin using:
+
+1. Get Minikube's IP:
 ```bash
 minikube ip
 ```
-Open:
+2. Open the following URL in your browser:
 ```
 http://<MINIKUBE_IP>:30001
 ```
 
-### **3. Login Credentials**
+### **Login Credentials**
 - **Username:** `root`
 - **Password:** (stored in Kubernetes Secret, default: `rootpassword`)
 
 ---
 
-## **3️⃣ Deploying MongoDB in Minikube**
+## **3️⃣ Accessing MongoDB in Minikube**
 
-MongoDB is automatically deployed using `setup.sh`. If needed, deploy manually:
-```bash
-kubectl apply -f k8s/mongodb-secret.yaml
-kubectl apply -f k8s/mongodb-pvc.yaml
-kubectl apply -f k8s/mongodb-deployment.yaml
-kubectl apply -f k8s/mongodb-service.yaml
-```
-
-### **Verify MongoDB Deployment**
-```bash
-kubectl get pods
-kubectl get svc
-```
-
-### **Access MongoDB Inside Kubernetes**
+### **1. Open MongoDB shell**
 ```bash
 kubectl exec -it $(kubectl get pod -l app=mongodb -o jsonpath="{.items[0].metadata.name}") -- mongosh -u mongoadmin -p securepass --authenticationDatabase admin
 ```
 
-### **List Available Databases**
+### **2. Verify the imported data**
 ```javascript
-show dbs
+use electronics
+db.electronics.find().limit(5).pretty()
 ```
 
-### **Retrieve MongoDB Credentials from Kubernetes Secret**
+### **3. Retrieve MongoDB credentials from Kubernetes Secret**
 ```bash
 kubectl get secret mongodb-secret -o jsonpath="{.data.MONGO_ROOT_PASSWORD}" | base64 --decode
 ```
@@ -141,7 +102,7 @@ kubectl get secret mongodb-secret -o jsonpath="{.data.MONGO_ROOT_PASSWORD}" | ba
 ```bash
 kubectl get svc postgres-service
 ```
-📌 **Note the `CLUSTER-IP` and port (`5432/TCP`)**. Use the **service name (`postgres-service`)** instead of a pod IP.
+📌 **Use the `CLUSTER-IP` instead of a dynamic pod IP for stable connections.**
 
 ### **2. Access pgAdmin**
 ```bash
@@ -173,4 +134,4 @@ kubectl logs -l app=postgres
 
 ---
 
-🚀 **Now PostgreSQL is accessible from pgAdmin!** 🎯
+🚀 **Now PostgreSQL is accessible from pgAdmin, and all services are running automatically via `setup.sh`!** 🎯
