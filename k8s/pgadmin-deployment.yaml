@@ -30,3 +30,19 @@ spec:
                   key: PGADMIN_DEFAULT_PASSWORD
           ports:
             - containerPort: 80
+          volumeMounts:
+            - name: pgadmin-config
+              mountPath: /pgadmin4/servers.json
+              subPath: servers.json
+            - name: pgpass-file
+              mountPath: /pgpass
+              subPath: pgpass
+              readOnly: true
+
+      volumes:
+        - name: pgadmin-config
+          configMap:
+            name: pgadmin-config
+        - name: pgpass-file
+          secret:
+            secretName: pgpass-secret

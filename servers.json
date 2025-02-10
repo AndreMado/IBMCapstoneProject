@@ -1,0 +1,15 @@
+{
+    "Servers": {
+        "1": {
+            "Name": "PostgreSQL Minikube",
+            "Group": "Servers",
+            "Host": "10.111.176.96",
+            "Port": 5432,
+            "MaintenanceDB": "staging",
+            "Username": "postgres",
+            "PassFile": "/pgpass",
+            "SSLMode": "prefer",
+            "ConnectNow": true
+        }
+    }
+}
