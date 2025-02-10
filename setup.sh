@@ -21,6 +21,13 @@ else
     echo "catalog.json already exists, skipping download."
 fi
 
+if [ ! -f "CREATE-SCRIPT.sql" ]; then
+    echo "Dowloading .csv for the datawarehouse"
+    wget -q --show-progress https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/nm75oOK5n7AGME1F7_OIQg/CREATE-SCRIPT.sql
+else
+    echo "DimDate already exists, skipping..."
+fi
+
 cd ..
 # Verificar si Minikube está corriendo
 echo "Welcome to my Capstone project :) by Andres Maldonado"
@@ -67,6 +74,7 @@ kubectl exec -it $(kubectl get pod -l app=mysql -o jsonpath="{.items[0].metadata
 
 echo "Database and data import completed successfully!"
 
+kubectl wait --for=condition=ready pod -l app=mysql --timeout=120s
 chmod +x datadump.sh
 ./datadump.sh
 
@@ -88,3 +96,14 @@ kubectl cp $(kubectl get pod -l app=mongodb -o jsonpath="{.items[0].metadata.nam
 
 kubectl wait --for=condition=ready pod -l app=postgres --timeout=120s
 kubectl exec -it $(kubectl get pod -l app=postgres -o jsonpath="{.items[0].metadata.name}") -- psql -U postgres -d postgres -c "\l"
+
+
+echo "postgres-service:5432:staging:admin:securepass" > pgpass
+chmod 600 pgpass
+kubectl delete secret pgpass-secret --ignore-not-found
+kubectl create secret generic pgpass-secret --from-file=pgpass
+kubectl create configmap pgadmin-config --from-file=servers.json --dry-run=client -o yaml | kubectl apply -f -
+kubectl delete pod -l app=pgadmin
+echo "Waiting for pgAdmin to start..."
+kubectl wait --for=condition=Ready pod -l app=pgadmin --timeout=90s
+kubectl exec -it $(kubectl get pod -l app=postgres -o jsonpath="{.items[0].metadata.name}") -- psql -U postgres -d staging -f /data/CREATE-SCRIPT.sql
