@@ -138,4 +138,21 @@ kubectl logs -l app=postgres
 1- To complete the exercises in the module number 3 is necessary run some sql staments, you con find it inside the sql directory.
 2.- By coping the query's individually you can take the screenshots for the tasks, (those statemnts are in exercises.sql)
 
+## **6 Module 5 of the CapstoneProject ##
+1.-You must drop the table sales_data from mysql to run the new sales.sql script, you can use either way using UI or terminal to do it.
+2.-To run the python script named "mysqlconnect.py" locate in python directory you must create a python virtual enviroment to install all the requiered dependencies.
+```bash
+python3 -m venv myenv
+source myenv/bin/activate  # En Linux/macOS
+myenv\Scripts\activate     # En Windows (CMD)
+pip install mysql-connector-python
+```
+3.- Configure the script with the NodePort IP of the mysql in Kubernetes.
+```bash
+kubectl get svc mysql-service
+```
+4.- The configuration should be as follows:
+```javascript
+connection = mysql.connector.connect(user='root', password='pass',host='192.168.49.2', port=30007,database='sales')
+```
 🚀 **Now PostgreSQL is accessible from pgAdmin, and all services are running automatically via `setup.sh`!** 🎯
