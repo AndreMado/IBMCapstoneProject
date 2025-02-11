@@ -134,4 +134,8 @@ kubectl logs -l app=postgres
 
 ---
 
+## **5 Exercises of PostgreSQL**
+1- To complete the exercises in the module number 3 is necessary run some sql staments, you con find it inside the sql directory.
+2.- By coping the query's individually you can take the screenshots for the tasks, (those statemnts are in exercises.sql)
+
 🚀 **Now PostgreSQL is accessible from pgAdmin, and all services are running automatically via `setup.sh`!** 🎯

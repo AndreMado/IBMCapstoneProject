@@ -51,6 +51,12 @@ if [ ! -f "FactSales.csv" ]; then
 else
     echo "FactSales already dowloaded.."
 fi
+if [ ! -f "ecommerce.csv" ]; then
+    echo "Dowloading required data for analysis"
+    wget -q --show-progress https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0321EN-SkillsNetwork/analytics/ecommerce.csv
+else
+    echo "ecommerce.csv already dowloaded..."
+fi
 
 
 cd ..
