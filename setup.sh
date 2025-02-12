@@ -57,6 +57,13 @@ if [ ! -f "ecommerce.csv" ]; then
 else
     echo "ecommerce.csv already dowloaded..."
 fi
+if [ ! -f "sales.sql" ] then
+    echo "Dowloading the file sales.sql..."
+    wget -q --show-progress https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0321EN-SkillsNetwork/ETL/sales.sql
+else
+    echo "sales.sql already intalled on this divice..."
+fi
+
 
 
 cd ..
@@ -110,7 +117,7 @@ echo "MySQL deployment completed successfully!"
 # Ejecutar script SQL en MySQL
 echo "Running SQL script to create and populate the database..."
 kubectl exec -it $(kubectl get pod -l app=mysql -o jsonpath="{.items[0].metadata.name}") -- \
-    mysql -u root -p$(kubectl get secret mysql-secret -o jsonpath="{.data.MYSQL_ROOT_PASSWORD}" | base64 --decode) < sql/OLTPdb.sql
+    mysql -u root -p$(kubectl get secret mysql-secret -o jsonpath="{.data.MYSQL_ROOT_PASSWORD}" | base64 --decode) < data/OLTPdb.sql
 
 echo "Database and data import completed successfully!"
 
