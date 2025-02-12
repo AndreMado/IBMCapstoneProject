@@ -168,4 +168,47 @@ In this module, we implemented a **data synchronization system** between the **M
 
 This synchronization guarantees that the Data Warehouse remains **up-to-date with the latest transactions** from the OLTP database. 🚀
 
-🚀 **Now PostgreSQL is accessible from pgAdmin, and all services are running automatically via `setup.sh`!** 🎯
+## **Apache Airflow Deployment and Configuration** 🚀  
+
+### **Overview**  
+In this module, we successfully deployed **Apache Airflow** on Kubernetes using Minikube. Airflow serves as the **ETL orchestration tool** that automates data workflows across different systems.  
+
+### **Implementation Steps**  
+
+### 🏗 **1. Deployment on Kubernetes**  
+- Airflow was deployed using a Kubernetes **Deployment and Service** definition.  
+- A **Persistent Volume** was configured to store DAGs.  
+- The Web UI was exposed via a **NodePort service** to allow external access.  
+
+### 🗄 **2. Database Configuration**  
+- Instead of deploying a separate database, **Airflow was integrated with the existing PostgreSQL instance** used for the Data Warehouse.  
+- The `SQL_ALCHEMY_CONN` parameter was set in `airflow-deployment.yaml` to connect Airflow to PostgreSQL.  
+- Airflow’s metadata database was **initialized within PostgreSQL** to ensure persistence across pod restarts.  
+
+### 🔐 **3. Secrets Management**  
+- A **Kubernetes Secret** was created to store Airflow's authentication credentials securely.  
+- The credentials were injected into the **Airflow environment variables** for secure login management.  
+
+### 🔑 **4. User Authentication and UI Access**  
+- The Airflow Web UI was configured with **RBAC authentication**.  
+- The first admin user was created manually inside the Airflow container to enable secure access.  
+
+### 🛠 **5. Testing and Troubleshooting**  
+- Logs were monitored to resolve **connection issues between Airflow and PostgreSQL**.  
+- The database credentials were validated using direct **psql commands** inside the PostgreSQL pod.  
+- Several **deployment rollouts and pod restarts** were performed to ensure the correct environment setup.  
+
+### ✅ **Current Status**  
+- Airflow is **fully operational** and connected to PostgreSQL.  
+- The Web UI is accessible using secure credentials.  
+- The system is now ready for **DAG development** and task automation.  
+- You may have problems with Auth access in Airflow, if the user do not exist you must create inside la instance of airflow, how?
+```bash
+kubectl exec -it $(kubectl get pod -l app=airflow -o jsonpath="{.items[0].metadata.name}") -- bash
+#ONCE INSIDE, VERIFY THE USERS BY TYPING
+airflow users list 
+#VERIFY THE PERSISTENT DB TOO, IN THIS CASE, POSTGRES
+airflow config get-value core sql_alchemy_conn
+#CREATE THE USER IF NOT EXISTS(YOU CAN CHANGE THE VALUES AS YOU WANT).
+airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com
+```
