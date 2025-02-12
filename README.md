@@ -134,11 +134,11 @@ kubectl logs -l app=postgres
 
 ---
 
-## **5 Exercises of PostgreSQL**
+## **5. Exercises of PostgreSQL**
 1- To complete the exercises in the module number 3 is necessary run some sql staments, you con find it inside the sql directory.
 2.- By coping the query's individually you can take the screenshots for the tasks, (those statemnts are in exercises.sql)
 
-## **6 Module 5 of the CapstoneProject ##
+## **6. Module 5 of the CapstoneProject ##
 1.-You must drop the table sales_data from mysql to run the new sales.sql script, you can use either way using UI or terminal to do it.
 2.-To run the python script named "mysqlconnect.py" locate in python directory you must create a python virtual enviroment to install all the requiered dependencies.
 ```bash
@@ -155,4 +155,17 @@ kubectl get svc mysql-service
 ```javascript
 connection = mysql.connector.connect(user='root', password='pass',host='192.168.49.2', port=30007,database='sales')
 ```
+## - MySQL to PostgreSQL Synchronization
+
+In this module, we implemented a **data synchronization system** between the **MySQL OLTP database** and the **PostgreSQL Data Warehouse**. 
+
+## IMPORTANT YOU MUST CREATE AND LOAD THE DATA MANUALLY IN BOTH DATABASES, MYSQL AND POSTGRES AS LAB INSTRUCTIONS.
+### 5Module Key Features: (automation.py)
+- **`get_latest_records()`**: Retrieves all new records from MySQL that are not yet present in PostgreSQL.
+- **`insert_records()`**: Inserts new records into PostgreSQL while preventing duplicates.
+- **Python Automation**: The entire synchronization process is automated through a Python script.
+- **Error Handling**: Ensures robust database operations with proper exception management.
+
+This synchronization guarantees that the Data Warehouse remains **up-to-date with the latest transactions** from the OLTP database. 🚀
+
 🚀 **Now PostgreSQL is accessible from pgAdmin, and all services are running automatically via `setup.sh`!** 🎯
