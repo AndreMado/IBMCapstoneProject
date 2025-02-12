@@ -161,5 +161,5 @@ kubectl cp data/DimDate.csv $(kubectl get pod -l app=pgadmin -o jsonpath="{.item
 kubectl cp data/DimCategory.csv $(kubectl get pod -l app=pgadmin -o jsonpath="{.items[0].metadata.name}"):/var/lib/pgadmin/storage/
 kubectl cp data/DimCountry.csv $(kubectl get pod -l app=pgadmin -o jsonpath="{.items[0].metadata.name}"):/var/lib/pgadmin/storage/
 kubectl cp data/FactSales.csv $(kubectl get pod -l app=pgadmin -o jsonpath="{.items[0].metadata.name}"):/var/lib/pgadmin/storage/
-
+kubectl cp data/sales-csv3mo8i5SHvta76u7DzUfhiw.csv $(kubectl get pod -l app=pgadmin -o jsonpath="{.items[0].metadata.name}"):/var/lib/pgadmin/storage/
 kubectl exec -it $(kubectl get pod -l app=postgres -o jsonpath="{.items[0].metadata.name}") -- psql -U postgres -d staging -f data/CREATE-SCRIPT.sql
