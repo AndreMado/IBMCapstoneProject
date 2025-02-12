@@ -65,6 +65,7 @@ else
 fi
 
 
+
 cd ..
 # Verificar si Minikube está corriendo
 echo "Welcome to my Capstone project :) by Andres Maldonado"
