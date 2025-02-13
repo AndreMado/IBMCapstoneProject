@@ -102,8 +102,11 @@ kubectl apply -f k8s/pgadmin-secret.yaml
 kubectl apply -f k8s/pgadmin-deployment.yaml
 kubectl apply -f k8s/pgadmin-service.yaml
 kubectl apply -f k8s/pgadmin-pvc.yaml
-
-
+kubectl apply -f k8s/airflow-pvc.yaml
+kubectl apply -f k8s/airflow-deployment.yaml
+kubectl apply -f k8s/airflow-service.yaml
+kubectl apply -f k8s/airflow-secret.yaml
+kubectl apply -f k8s/airflow-data-pvc.yaml
 
 
 
