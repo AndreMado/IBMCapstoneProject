@@ -16,7 +16,6 @@ spec:
         app: airflow
     spec:
       containers:
-      containers:
         - name: airflow
           command: ["/bin/bash", "-c"]
           args:
@@ -47,13 +46,19 @@ spec:
                 secretKeyRef:
                   name: airflow-secret
                   key: AIRFLOW_PASSWORD
-
           ports:
             - containerPort: 8080
-          volumeMounts:
+          volumeMounts:  # ⬅️ Este bloque debe estar dentro del container
             - name: airflow-storage
               mountPath: /opt/airflow/dags
-      volumes:
+            - name: airflow-data
+              mountPath: /opt/airflow/data
+      volumes:  # ⬅️ Este bloque debe estar FUERA del container, al mismo nivel que `containers`
         - name: airflow-storage
           persistentVolumeClaim:
             claimName: airflow-pvc
+        - name: airflow-data
+          persistentVolumeClaim:
+            claimName: airflow-data-pvc
+
+

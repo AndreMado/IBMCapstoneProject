@@ -212,3 +212,10 @@ airflow config get-value core sql_alchemy_conn
 #CREATE THE USER IF NOT EXISTS(YOU CAN CHANGE THE VALUES AS YOU WANT).
 airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com
 ```
+-Make sure of copy the DAG and Data into airflow volumen by entering the following command.
+```bash
+kubectl cp dags/module5.py $(kubectl get pod -l app=airflow -o jsonpath="{.items[0].metadata.name}"):/opt/airflow/dags/
+#COPY data/txt into airflow
+kubectl cp data/accesslog.txt $(kubectl get pod -l app=airflow -o jsonpath="{.items[0].metadata.name}"):/opt/airflow/data/
+
+```
