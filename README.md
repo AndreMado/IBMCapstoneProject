@@ -219,3 +219,15 @@ kubectl cp dags/module5.py $(kubectl get pod -l app=airflow -o jsonpath="{.items
 kubectl cp data/accesslog.txt $(kubectl get pod -l app=airflow -o jsonpath="{.items[0].metadata.name}"):/opt/airflow/data/
 
 ```
+## 📓 Jupyter Notebooks Integration
+
+As part of the final module, we have included a **notebooks/** directory that contains Jupyter Notebooks for analyzing data processed through Spark.
+
+### 📂 **Notebook Persistence in Kubernetes**
+Once the Jupyter service is deployed in Kubernetes, the notebooks must be copied to the **persistent volume** to ensure they remain available across restarts.
+
+After deploying Jupyter, run the following command to copy the notebooks into the persistent storage:
+
+```bash
+kubectl cp notebooks/ $(kubectl get pod -l app=jupyter -o jsonpath="{.items[0].metadata.name}"):/home/jovyan/work
+```
