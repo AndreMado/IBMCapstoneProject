@@ -107,6 +107,12 @@ kubectl apply -f k8s/airflow-deployment.yaml
 kubectl apply -f k8s/airflow-service.yaml
 kubectl apply -f k8s/airflow-secret.yaml
 kubectl apply -f k8s/airflow-data-pvc.yaml
+kubectl apply -f k8s/spark-pvc.yaml
+kubectl apply -f k8s/spark-master-deployment.yaml
+kubectl apply -f k8s/spark-worker-deployment.yaml
+kubectl apply -f k8s/jupyter-deployment.yaml
+kubectl apply -f k8s/jupyter-pvc.yaml
+kubectl apply -f k8s/jupyter-service.yaml
 
 
 
